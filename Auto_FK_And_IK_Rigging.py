@@ -2,8 +2,6 @@ import maya.cmds as cmds
 import maya.OpenMaya as om
 #-------------------------------------------------------------------
 # Auto_FK_Functions
-
-
 def auto_fk(*args):
     ctrl = cmds.textField("name", query=True, text=True)
     has_parent = None
@@ -44,15 +42,11 @@ def auto_fk(*args):
         has_parent = ctrl
 #-------------------------------------------------------------------
 # Create Space Locator Function
-
-
 def create_loc(vect):
     loc = cmds.spaceLocator()
     cmds.move(vect.x, vect.y, vect.z, loc[0])
     cmds.rename(loc, "Vector_loc_0")
 # Auto_IK_And_PoleVector_Function
-
-
 def auto_ik(*args):
     polevectr_ctrl = cmds.textField("name", query=True, text=True)
     # polevectr_ctrl = None
