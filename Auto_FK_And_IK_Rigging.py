@@ -1,7 +1,8 @@
-import sys
 import maya.cmds as cmds
 import maya.OpenMaya as om
 #-------------------------------------------------------------------
+# Auto_FK_Functions
+
 def auto_fk(*args):
     ctrl = cmds.textField("name", query=True, text=True)
     has_parent = None
@@ -11,11 +12,11 @@ def auto_fk(*args):
 
     for i in selection:
         grp = cmds.group(em=True, name ="{}_ctrl_grp".format(i))
-        # law el ctrl none aw name bta3oh m4 mawgod fel scene
+        # if ctrl is not exist in the scene already
         if ctrl == None or cmds.objExists(ctrl)==False:
             ctrl = cmds.circle(name = "{}_ctrl".format(i), normal=(0,1,0), radius=2)[0]
         else:
-            # e3mel mnnoh duplicate w sammeha
+            # duplicate it and rename it
             ctrl = cmds.duplicate(ctrl, name="{}_ctrl".format(i))[0]
         loc_name = "{}_ctrl_loc".format(i)
         loc = cmds.CreateLocator()
@@ -37,9 +38,15 @@ def auto_fk(*args):
         if has_parent is not None:
             cmds.parent(grp, has_parent)
         has_parent = ctrl
-#---------------------------------------------------------
+#-------------------------------------------------------------------
+# Auto_IK_Functions
+
+def create_loc(vect):
+    loc = cmds.spaceLocator()
+    cmds.move(vect.x, vect.y, vect.z, loc[0])
+    cmds.rename(loc, "Vector_loc_0")
+
 def auto_ik(*args):
-    #---------------------------------------------------------
     polevectr_ctrl = cmds.textField("name", query=True, text=True)
     ik_ctrl = cmds.textField("name", query=True, text=True)
     polevect_loc = "PoleVector"
@@ -50,54 +57,48 @@ def auto_ik(*args):
     
     # Get The Vector Of [A] [Shoulder_Jnt]
     cmds.select(selection[0])
-    a_poss = cmds.xform(q=True, ws=True, t=True)
-    a = om.MVector(a_poss[0], a_poss[1], a_poss[2])
+    vect_a_poss = cmds.xform(q=True, ws=True, t=True)
+    vect_a = om.MVector(vect_a_poss[0], vect_a_poss[1], vect_a_poss[2])
     
     # Get The Vector Of [B] [Elbow_Jnt]
     cmds.select(selection[1])
-    b_poss = cmds.xform(q=True, ws=True, t=True)
-    b = om.MVector(b_poss[0], b_poss[1], b_poss[2])
+    vect_b_poss = cmds.xform(q=True, ws=True, t=True)
+    vect_b = om.MVector(vect_b_poss[0], vect_b_poss[1], vect_b_poss[2])
     
     # Get The Vector Of [C] [Wrest_Jnt]
     cmds.select(selection[2])
-    c_poss = cmds.xform(q=True, ws=True, t=True)
-    c = om.MVector(c_poss[0], c_poss[1], c_poss[2])
-    #---------------------------------------------------------
-    # (Vector[C] - Vector[A]) To Get Vector[F] [The Vector Between [A] and [C]
-    f = c - a
-    loc = cmds.spaceLocator(name = "VectorF_Loc")
-    cmds.move(f.x, f.y, f.z, loc[0])
-    #---------------------------------------------------------
-    # The Half Distance Of Vector[F] 
-    d = f * 0.5
-    loc = cmds.spaceLocator(name = "VectorD_Loc")
-    cmds.move(d.x, d.y, d.z, loc[0])
-    #---------------------------------------------------------
-    # Add [D] To [A]
-    # To Get The Half Of The Distance Between [A] and [C] 
-    e = d + a 
-    loc = cmds.spaceLocator(name = "VectorE_Loc")
-    cmds.move(e.x, e.y, e.z, loc[0])
-    #---------------------------------------------------------
-    # Subtract [B] - [E]
-    # To Get The Distance Vector[H] Between [E] and [B]
-    h = b - e 
-    loc = cmds.spaceLocator(name = "VectorH_Loc")
-    cmds.move(h.x, h.y, h.z, loc[0])
-    #---------------------------------------------------------
-    # Multiply Vector[H] By 2
-    # To Get The Distance Of PoleVector 
-    g = h * 2 
-    loc = cmds.spaceLocator(name = "VectorG_Loc")
-    cmds.move(g.x, g.y, g.z, loc[0])
-    #---------------------------------------------------------
-    # Add Vector[G] To Vector[E]
-    # To Get The Real Placement Of The PoleVector
-    i = g + e 
-    loc = cmds.spaceLocator(name = polevect_loc)
-    cmds.move(i.x, i.y, i.z, loc[0])
-    #---------------------------------------------------------
+    vect_c_poss = cmds.xform(q=True, ws=True, t=True)
+    vect_c = om.MVector(vect_c_poss[0], vect_c_poss[1], vect_c_poss[2])
     
+    # (Vector[C] - Vector[A]) To Get Vector[D] [The Vector Between [Shoulder_Jnt] and [Wrest_Jnt]
+    vect_d = vect_c - vect_a
+    create_loc(vect_d)
+    
+    # The Half Distance Of Vector[D] 
+    vect_e = vect_d * 0.5
+    create_loc(vect_e)
+    
+    # Add [E] To [A]
+    # To Get The Half Of The Distance Between [Shoulder_Jnt] and [Wrest_Jnt]
+    vect_f = vect_e + vect_a 
+    create_loc(vect_f)
+    
+    # Subtract [B] - [E]
+    # To Get The Distance Vector[H] Between [E] and [Elbow_Jnt]
+    vect_g = vect_b - vect_f 
+    create_loc(vect_g)
+    
+    # Multiply Vector[G] By 2
+    # To Get The Distance_vector Of PoleVector 
+    vect_h = vect_g * 2 
+    create_loc(vect_h)
+    
+    # Add Vector[H] To Vector[E]
+    # To Get The Real Placement Of The PoleVector
+    vect_i = vect_h + vect_f 
+    loc = cmds.spaceLocator(name=polevect_loc)
+    cmds.move(vect_i.x, vect_i.y, vect_i.z, loc[0])
+    #---------------------------------------------------------
     if polevectr_ctrl == None or cmds.objExists(polevectr_ctrl)==False:
         polevectr_ctrl = cmds.circle(name = "polevectr_ctrl", normal=(0,1,0), radius=2)[0]
     else : 
@@ -120,7 +121,6 @@ def auto_ik(*args):
     cmds.delete(pcc)
     cmds.pointConstraint(ik_ctrl, ik_handle)
     cmds.orientConstraint(ik_ctrl, selection[2])
-    #---------------------------------------------------------
 #-------------------------------------------------------------------
 def matcher():
     pc = cmds.parentConstraint(mo=0)
@@ -159,9 +159,9 @@ def gui_layout():
     cmds.columnLayout(adjustableColumn=True)
     cmds.rowColumnLayout()
     cmds.columnLayout()
-    cmds.button(l='Default_CTRL', c = 'defControl()', h=50, w=300)
-    cmds.button(l='ParentShape', c = "cmds.parent(r=1, s=1)", h=50, w=300)
-    cmds.button(l='DelConst', c='deleteConst()', h=50, w=300)
+    cmds.button(l='Default_CTRL', c = 'defControl()', h=40, w=300)
+    cmds.button(l='ParentShape', c = "cmds.parent(r=1, s=1)", h=40, w=300)
+    cmds.button(l='DelConst', c='deleteConst()', h=40, w=300)
     cmds.rowColumnLayout()
     cmds.columnLayout()
     cmds.frameLayout("Recall_Custom_CTRL")
@@ -170,18 +170,16 @@ def gui_layout():
     cmds.radioCollection("Constraint_Type")
     cmds.radioButton("Parent")
     cmds.radioButton("Orient")
-    cmds.button(l='Auto_FK', c='auto_fk()', h=100, w=300)
-    cmds.button(l='Auto_IK', c='auto_ik()', h=100, w=300)
-    cmds.button(l='Match/Align', c='matcher()', h=100, w=300)
+    cmds.button(l='Auto_FK', c='auto_fk()', h=80, w=300)
+    cmds.button(l='Auto_IK', c='auto_ik()', h=80, w=300)
+    cmds.button(l='Match/Align', c='matcher()', h=50, w=300)
     cmds.button(l='Make_REF', c='make_ref()', h=50, w=300)
     cmds.rowColumnLayout()
     cmds.columnLayout()
-    # cmds.button(l='Parent/MO=1', c= 'cmds.parentConstraint(mo=1)', h=50, w=300)
-    # cmds.button(l='Orient/MO=1', c = "cmds.orientConstraint(mo=1)", h=50, w=300)
-    # cmds.button(l='Point/MO=1', c = "cmds.pointConstraint(mo=1)", h=50, w=300)
+    cmds.button(l='Parent/MO=1', c= 'cmds.parentConstraint(mo=1)', h=30, w=300)
+    cmds.button(l='Orient/MO=1', c = "cmds.orientConstraint(mo=1)", h=30, w=300)
+    cmds.button(l='Point/MO=1', c = "cmds.pointConstraint(mo=1)", h=30, w=300)
 #-------------------------------------------------------------------
-
 Rig_Quick_Menue()
 gui_layout()
-
 #------------------------------------------------------------------
