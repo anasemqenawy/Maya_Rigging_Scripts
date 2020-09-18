@@ -13,8 +13,7 @@ def auto_fk(*args):
         grp = cmds.group(em=True, name="{}_ctrl_grp".format(i))
         # if ctrl is not exist in the scene already
         if ctrl == None or cmds.objExists(ctrl) == False:
-            ctrl = cmds.circle(name="{}_ctrl".format(
-                i), normal=(0, 1, 0), radius=2)[0]
+            ctrl = cmds.circle(name="{}_ctrl".format(i), normal=(0, 1, 0), radius=2)[0]
         else:
             # duplicate it and rename it
             ctrl = cmds.duplicate(ctrl, name="{}_ctrl".format(i))[0]
@@ -32,11 +31,9 @@ def auto_fk(*args):
         cmds.DeleteHistory(ctrl)
         if i is not None:
             if mode == "Parent":
-                cmds.parentConstraint(
-                    ctrl, i, mo=1, name="{}_parentConst".format(i))
+                cmds.parentConstraint(ctrl, i, mo=1, name="{}_parentConst".format(i))
             elif mode == "Orient":
-                cmds.orientConstraint(
-                    ctrl, i, mo=1, name="{}_orientConst".format(i))
+                cmds.orientConstraint(ctrl, i, mo=1, name="{}_orientConst".format(i))
         if has_parent is not None:
             cmds.parent(grp, has_parent)
         has_parent = ctrl
@@ -60,8 +57,7 @@ def auto_ik(*args):
     for i in selection:
         cmds.joint(e=True, spa=True, ch=True)
     # Create IK Handle Between Shoulder And Wrist
-    cmds.ikHandle(sj=selection[0], ee=selection[2],
-                  name=ik_handle, solver="ikRPsolver")
+    cmds.ikHandle(sj=selection[0], ee=selection[2],name=ik_handle, solver="ikRPsolver")
     #---------------------------------------------------------
     # Make Shoulder Vector
     shldr_p = cmds.select(selection[0])
@@ -104,8 +100,7 @@ def auto_ik(*args):
             polevectr_ctrl, name="polevectr_ctrl")[0]
     #---------------------------------------------------------
     if ik_ctrl == None or cmds.objExists(ik_ctrl) == False:
-        ik_ctrl = cmds.circle(name="ik_arm_ctrl",
-                              normal=(0, 1, 0), radius=2)[0]
+        ik_ctrl = cmds.circle(name="ik_arm_ctrl",normal=(0, 1, 0), radius=2)[0]
     else:
         ik_ctrl = cmds.duplicate(ik_ctrl, name="ik_arm_ctrl")[0]
     grp = cmds.group(em=True, name="{}_Grp".format(ik_ctrl))
