@@ -1,1 +1,1 @@
-# Maya_Auto_FK_And_IK_Rigging_Script
+# Maya_Rigging_Script
