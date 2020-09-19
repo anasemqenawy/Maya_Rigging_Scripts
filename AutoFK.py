@@ -40,5 +40,5 @@ def auto_fk(*args):
             cmds.parent(grp, has_parent)
         has_parent = ctrl
 #-------------------------------------------------------------------
-if __init__ == "main":
+if __name__ == "__main__":
     auto_fk()
