@@ -1,5 +1,6 @@
 import maya.cmds as cmds
 import maya.OpenMaya as om
+import FK_IK_Blend
 import Functions
 import AutoFK
 import AutoIK
@@ -27,8 +28,9 @@ def gui_layout():
     cmds.radioCollection("Constraint_Type")
     cmds.radioButton("Parent")
     cmds.radioButton("Orient")
-    cmds.button(l='Auto_FK', c='AutoFK.auto_fk()', h=70, w=300)
-    cmds.button(l='Auto_IK', c='AutoIK.auto_ik()', h=70, w=300)
+    cmds.button(l='Auto_FK', c='AutoFK.auto_fk()', h=65, w=300)
+    cmds.button(l='Auto_IK', c='AutoIK.auto_ik()', h=65, w=300)
+    cmds.button(l='FK/IK_Blend', c='FK_IK_Blend.fk_ik_blend()', h=65, w=300)
     cmds.button(l='Match/Align', c='matcher()', h=50, w=300)
     cmds.button(l='Make_REF', c='make_ref()', h=30, w=300)
     cmds.button(l='Make_Normal', c='return_normal()', h=30, w=300)
@@ -41,4 +43,3 @@ def gui_layout():
 Rig_Quick_Menue()
 gui_layout()
 #------------------------------------------------------------------
-
