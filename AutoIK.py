@@ -76,5 +76,5 @@ def auto_ik(*args):
     cmds.pointConstraint(ik_ctrl, ik_handle)
     cmds.orientConstraint(ik_ctrl, selection[2])
 #---------------------------------------------------------
-if __init__ == "main":
+if __name__ == "__main__":
     auto_ik()
