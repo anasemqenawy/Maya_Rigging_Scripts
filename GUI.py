@@ -11,6 +11,7 @@ def Rig_Quick_Menue():
     if cmds.window(window_name, exists=True):
         cmds.deleteUI(window_name)
     window = cmds.window(window_name)
+    scroll = cmds.scrollLayout(verticalScrollBarAlwaysVisible=True)
     cmds.showWindow(window)
 #-------------------------------------------------------------------
 def gui_layout():
