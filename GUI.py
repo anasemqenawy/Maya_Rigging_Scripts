@@ -6,7 +6,7 @@ import AutoFK
 import AutoIK
 #-------------------------------------------------------------------
 def Rig_Quick_Menue():
-    window_name = "Anas_Rig_ITI"
+    window_name = "Anas_Rig_Menue"
     cmds.window(title=window_name, iconName="winTest", height=300, width=300)
     if cmds.window(window_name, exists=True):
         cmds.deleteUI(window_name)
