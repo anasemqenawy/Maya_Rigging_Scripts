@@ -1,7 +1,7 @@
 import sys
 import maya.cmds as cmds
 #---------------------------------------------------------
-def fk_ik_blend():
+def fk_ik_blend(*args):
      #---------------------------------------------------------
     # swtch_ctrl = cmds.textField("name", query=True, text=True)
     swtch_ctrl = None
